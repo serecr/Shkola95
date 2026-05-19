@@ -45,7 +45,7 @@ class AssistantViewModel(app: Application) : AndroidViewModel(app) {
                 id = nextId++,
                 fromUser = false,
                 text = "Привет! Я помощник Школы №95. Расписание и факты — отвечаю мгновенно. " +
-                    "Если включить локальную AI (Gemma), смогу болтать на любые темы офлайн.",
+                    "Если включить локальную AI (Qwen 2.5), смогу болтать на любые темы офлайн.",
             ),
         ),
     )

@@ -41,17 +41,12 @@ sealed class ModelState {
 }
 
 /**
- * Downloads, stores and exposes the on-device Gemma model file.
+ * Downloads, stores and exposes the on-device LLM model file.
  *
- * The Hugging Face repo is gated by Google's Gemma license, so users must:
- *   1. Open https://huggingface.co/litert-community/Gemma3-1B-IT in a browser,
- *      sign in and accept the license.
- *   2. Create a read token at https://huggingface.co/settings/tokens.
- *   3. Paste the token into the app's settings.
- *
- * The token is stored in [Prefs.hfToken] and sent as `Authorization: Bearer`.
- * A custom URL can be set in [Prefs.modelUrl] to point at any other .task file
- * (e.g. a self-hosted mirror) — in that case the token is not required.
+ * The default model is Qwen 2.5 1.5B Instruct (q8, ~1.5 GB) from the
+ * non-gated `litert-community` Hugging Face repo, so no token is needed by
+ * default. If [Prefs.hfToken] is set we still attach it as `Bearer` so users
+ * can point [Prefs.modelUrl] at any gated `.task` file (e.g. a Gemma mirror).
  */
 class ModelManager(
     private val appContext: Context,
@@ -94,14 +89,9 @@ class ModelManager(
             return@withContext true
         }
         val url = effectiveUrl()
+        // HF token is optional — the default Qwen model is public. Users who
+        // point modelUrl at a gated repo (e.g. Gemma) can still paste one.
         val token = prefs.hfToken.takeIf { it.isNotBlank() }
-        if (url.contains("huggingface.co") && token.isNullOrBlank()) {
-            _state.value = ModelState.Error(
-                "Нужен Hugging Face токен. Зайди на huggingface.co, прими лицензию Gemma " +
-                    "и вставь read-токен в Настройки → AI.",
-            )
-            return@withContext false
-        }
         _state.value = ModelState.Downloading(0L, -1L)
         val resumeFrom = if (partFile.exists()) partFile.length() else 0L
         var connection: HttpURLConnection? = null
@@ -120,8 +110,8 @@ class ModelManager(
             if (code !in 200..299) {
                 _state.value = ModelState.Error(
                     when (code) {
-                        401, 403 -> "Hugging Face отклонил токен (HTTP $code). " +
-                            "Проверь, что лицензия Gemma принята и токен read."
+                        401, 403 -> "Сервер модели отклонил запрос (HTTP $code). " +
+                            "Если используешь свой URL — проверь права/токен в Настройках."
                         404 -> "Файл модели не найден (HTTP 404). Проверь URL в Настройках."
                         else -> "Ошибка сети: HTTP $code"
                     },
@@ -181,14 +171,16 @@ class ModelManager(
 
     companion object {
         /**
-         * Gemma 3 1B Instruct, INT4 quantised, ~530 MB. The file lives in the
-         * `litert-community/Gemma3-1B-IT` HF repo and is gated by Google's
-         * Gemma license — users need a HF token (see [Prefs.hfToken]).
+         * Qwen 2.5 1.5B Instruct, INT8 quantised, 4K context, ~1.5 GB. Lives
+         * in the non-gated `litert-community/Qwen2.5-1.5B-Instruct` HF repo,
+         * so it can be downloaded without an HF token. Qwen is multilingual
+         * (Russian works well out of the box) and ships with no Google-style
+         * Gemma license click-wall.
          */
         const val DEFAULT_MODEL_URL =
-            "https://huggingface.co/litert-community/Gemma3-1B-IT/resolve/main/" +
-                "Gemma3-1B-IT_multi-prefill-seq_q4_ekv2048.task"
+            "https://huggingface.co/litert-community/Qwen2.5-1.5B-Instruct/resolve/main/" +
+                "Qwen2.5-1.5B-Instruct_multi-prefill-seq_q8_ekv4096.task"
 
-        const val MODEL_FILENAME = "gemma3-1b-it-int4.task"
+        const val MODEL_FILENAME = "qwen2.5-1.5b-it-q8.task"
     }
 }

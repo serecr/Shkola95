@@ -90,10 +90,10 @@ class LocalLlmEngine(
     }
 
     /**
-     * Build the prompt sent to Gemma. The chat template for `gemma-3-it` uses
-     * `<start_of_turn>user … <start_of_turn>model` markers. MediaPipe currently
-     * applies the template automatically when the model card declares it, so we
-     * just send a single user turn that bundles the system prompt + question.
+     * Build the prompt sent to the model. MediaPipe's `.task` bundle ships with
+     * the model-specific chat template (ChatML for Qwen, `<start_of_turn>` for
+     * Gemma, etc.), so we just pass a single user turn that bundles the system
+     * prompt and the question.
      */
     fun buildPrompt(userMessage: String, contextSummary: String = ""): String {
         val system = prefs.aiSystemPrompt.ifBlank { DEFAULT_SYSTEM_PROMPT }
@@ -117,7 +117,7 @@ class LocalLlmEngine(
     companion object {
         /**
          * Permissive school-helper persona. Deliberately does NOT carry any
-         * "I cannot help with that" framing — Gemma 3 is fairly cooperative
+         * "I cannot help with that" framing — Qwen 2.5 is fairly cooperative
          * out of the box and the user can fully replace this via
          * [Prefs.aiSystemPrompt] in Settings → AI.
          */

@@ -201,7 +201,7 @@ private fun ModelBanner(
                         style = MaterialTheme.typography.titleSmall,
                     )
                     Text(
-                        "Скачай Gemma 3 1B (~530 МБ) — будет работать офлайн.",
+                        "Скачай Qwen 2.5 1.5B (~1.5 ГБ) — будет работать офлайн.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
@@ -216,7 +216,7 @@ private fun ModelBanner(
             Column(Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "Скачиваю Gemma…",
+                        "Скачиваю Qwen…",
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.weight(1f),
                     )

@@ -225,7 +225,7 @@ fun SettingsScreen(vm: AppViewModel) {
                     Column(Modifier.weight(1f)) {
                         Text("Локальная AI", style = MaterialTheme.typography.titleSmall)
                         Text(
-                            "Gemma 3 1B (Google), запуск на телефоне, без интернета после скачивания.",
+                            "Qwen 2.5 1.5B (Alibaba), запуск на телефоне, без интернета после скачивания.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -238,12 +238,12 @@ fun SettingsScreen(vm: AppViewModel) {
                 Spacer(Modifier.height(12.dp))
 
                 Text(
-                    "Hugging Face токен",
+                    "Hugging Face токен (необязательно)",
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    "Нужен один раз для скачивания. Прими лицензию Gemma на huggingface.co " +
-                        "и создай read-токен в Settings → Tokens.",
+                    "Qwen 2.5 скачивается без токена. Токен нужен только если в «URL модели» " +
+                        "вставлена гейтнутая ссылка (напр. Gemma).",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -262,7 +262,7 @@ fun SettingsScreen(vm: AppViewModel) {
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    "Оставь пустым, чтобы использовать стандартный Gemma 3 1B. " +
+                    "Оставь пустым, чтобы использовать стандартный Qwen 2.5 1.5B. " +
                         "Можно указать ссылку на свой .task файл.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
