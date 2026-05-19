@@ -47,6 +47,10 @@ fun SettingsScreen(vm: AppViewModel) {
     val dark by vm.darkMode.collectAsState()
     val accent by vm.accentColor.collectAsState()
     val dynamic by vm.dynamicColor.collectAsState()
+    val aiEnabled by vm.aiEnabled.collectAsState()
+    val hfToken by vm.hfToken.collectAsState()
+    val modelUrl by vm.modelUrl.collectAsState()
+    val aiSystemPrompt by vm.aiSystemPrompt.collectAsState()
 
     Column(
         Modifier
@@ -205,6 +209,92 @@ fun SettingsScreen(vm: AppViewModel) {
                     }
                     Spacer(Modifier.height(8.dp))
                 }
+            }
+        }
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Column(Modifier.padding(16.dp)) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Локальная AI", style = MaterialTheme.typography.titleSmall)
+                        Text(
+                            "Qwen 2.5 1.5B (Alibaba), запуск на телефоне, без интернета после скачивания.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Switch(
+                        checked = aiEnabled,
+                        onCheckedChange = { vm.setAiEnabled(it) },
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
+
+                Text(
+                    "Hugging Face токен (необязательно)",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    "Qwen 2.5 скачивается без токена. Токен нужен только если в «URL модели» " +
+                        "вставлена гейтнутая ссылка (напр. Gemma).",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(6.dp))
+                OutlinedTextField(
+                    value = hfToken,
+                    onValueChange = { vm.setHfToken(it) },
+                    placeholder = { Text("hf_••••••••") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    "URL модели (необязательно)",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    "Оставь пустым, чтобы использовать стандартный Qwen 2.5 1.5B. " +
+                        "Можно указать ссылку на свой .task файл.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(6.dp))
+                OutlinedTextField(
+                    value = modelUrl,
+                    onValueChange = { vm.setModelUrl(it) },
+                    placeholder = { Text("https://…/model.task") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    "Системный промпт",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    "Поведение AI. Пусто = стандартный «школьный помощник без отказов».",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(6.dp))
+                OutlinedTextField(
+                    value = aiSystemPrompt,
+                    onValueChange = { vm.setAiSystemPrompt(it) },
+                    placeholder = { Text("Например: «Отвечай как друг, без воды»") },
+                    minLines = 2,
+                    maxLines = 6,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
 

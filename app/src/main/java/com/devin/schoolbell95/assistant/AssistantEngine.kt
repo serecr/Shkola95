@@ -15,6 +15,13 @@ import java.util.TimeZone
  */
 enum class ReplyKind {
     JOKE, MOTIVATION, FACT, SCHEDULE, MATH, MEMORY, OTHER,
+
+    /**
+     * The rule-based engine has nothing to say. Callers (e.g. the ViewModel) may
+     * route the original prompt to the on-device LLM instead of showing the
+     * canned «Не понял» hint.
+     */
+    UNKNOWN,
 }
 
 /**
@@ -253,7 +260,7 @@ object AssistantEngine {
         // --- built-in knowledge base (~10k baked-in answers) ---
         KnowledgeBase.lookup(q)?.let { return it to ReplyKind.FACT }
 
-        return fallback(q) to ReplyKind.OTHER
+        return fallback(q) to ReplyKind.UNKNOWN
     }
 
     // ---------- normalization ----------
