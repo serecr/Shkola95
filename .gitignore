@@ -1,0 +1,20 @@
+# Built artifacts
+.gradle/
+build/
+*/build/
+*.apk
+*.aab
+*.aar
+
+# Local environment
+local.properties
+.idea/
+*.iml
+captures/
+
+# Native debug symbols
+*.so
+
+# Misc
+.DS_Store
+.kotlin/
