@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -130,8 +131,12 @@ class ModelManager(
 
             val contentLength = connection.contentLengthLong
             val total = if (code == 206 && resumeFrom > 0) resumeFrom + contentLength else contentLength
-            val append = (code == 206)
-            val out = partFile.outputStream().buffered()
+            val append = (code == 206 && resumeFrom > 0)
+            // Open in append mode for HTTP 206 resumes so we keep the bytes we
+            // already have. Otherwise truncate — the server is sending the
+            // whole file from byte 0 (HTTP 200) and any leftover `.part` is
+            // stale.
+            val out = FileOutputStream(partFile, append).buffered()
             var received = if (append) resumeFrom else 0L
             try {
                 connection.inputStream.use { input ->
