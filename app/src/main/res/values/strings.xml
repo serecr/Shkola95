@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Школа №95</string>
+    <string name="widget_description">Следующий звонок · Школа №95</string>
+    <string name="widget_today_description">Расписание на сегодня · Школа №95</string>
+    <string name="widget_assistant_description">Открыть помощника · Школа №95</string>
+</resources>
