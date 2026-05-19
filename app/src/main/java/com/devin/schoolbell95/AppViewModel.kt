@@ -53,6 +53,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private val _notify5 = MutableStateFlow(prefs.notify5Min)
     val notify5: StateFlow<Boolean> = _notify5.asStateFlow()
 
+    private val _aiEnabled = MutableStateFlow(prefs.aiEnabled)
+    val aiEnabled: StateFlow<Boolean> = _aiEnabled.asStateFlow()
+
+    private val _hfToken = MutableStateFlow(prefs.hfToken)
+    val hfToken: StateFlow<String> = _hfToken.asStateFlow()
+
+    private val _modelUrl = MutableStateFlow(prefs.modelUrl)
+    val modelUrl: StateFlow<String> = _modelUrl.asStateFlow()
+
+    private val _aiSystemPrompt = MutableStateFlow(prefs.aiSystemPrompt)
+    val aiSystemPrompt: StateFlow<String> = _aiSystemPrompt.asStateFlow()
+
     /** Which dayKind the user is currently viewing/editing in the Bells screen. */
     private val _selectedDayKind = MutableStateFlow(todayDayKind())
     val selectedDayKind: StateFlow<Int> = _selectedDayKind.asStateFlow()
@@ -139,6 +151,26 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         prefs.notify5Min = v
         _notify5.update { v }
         BellScheduler.rescheduleAll(getApplication())
+    }
+
+    fun setAiEnabled(v: Boolean) {
+        prefs.aiEnabled = v
+        _aiEnabled.update { v }
+    }
+
+    fun setHfToken(v: String) {
+        prefs.hfToken = v
+        _hfToken.update { v.trim() }
+    }
+
+    fun setModelUrl(v: String) {
+        prefs.modelUrl = v
+        _modelUrl.update { v.trim() }
+    }
+
+    fun setAiSystemPrompt(v: String) {
+        prefs.aiSystemPrompt = v
+        _aiSystemPrompt.update { v }
     }
 
     fun setSelectedDayKind(kind: Int) {

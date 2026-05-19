@@ -34,6 +34,26 @@ class Prefs(context: Context) {
         get() = sp.getBoolean(KEY_5MIN, true)
         set(value) = sp.edit { putBoolean(KEY_5MIN, value) }
 
+    /** Hugging Face read token, used to download the gated Gemma model. */
+    var hfToken: String
+        get() = sp.getString(KEY_HF_TOKEN, "") ?: ""
+        set(value) = sp.edit { putString(KEY_HF_TOKEN, value.trim()) }
+
+    /** Optional override for the model download URL (.task file). Empty = use default. */
+    var modelUrl: String
+        get() = sp.getString(KEY_MODEL_URL, "") ?: ""
+        set(value) = sp.edit { putString(KEY_MODEL_URL, value.trim()) }
+
+    /** When true the assistant routes free-form questions to the on-device LLM. */
+    var aiEnabled: Boolean
+        get() = sp.getBoolean(KEY_AI_ENABLED, true)
+        set(value) = sp.edit { putBoolean(KEY_AI_ENABLED, value) }
+
+    /** User-tunable system prompt for the local LLM. Empty = use built-in default. */
+    var aiSystemPrompt: String
+        get() = sp.getString(KEY_AI_PROMPT, "") ?: ""
+        set(value) = sp.edit { putString(KEY_AI_PROMPT, value) }
+
     companion object {
         private const val KEY_SHIFT = "shift"
         private const val KEY_CLASS = "class"
@@ -42,5 +62,9 @@ class Prefs(context: Context) {
         private const val KEY_DYNAMIC = "dynamic_color"
         private const val KEY_BELL = "bell"
         private const val KEY_5MIN = "five_min"
+        private const val KEY_HF_TOKEN = "hf_token"
+        private const val KEY_MODEL_URL = "model_url"
+        private const val KEY_AI_ENABLED = "ai_enabled"
+        private const val KEY_AI_PROMPT = "ai_system_prompt"
     }
 }
