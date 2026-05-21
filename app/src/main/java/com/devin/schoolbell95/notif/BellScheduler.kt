@@ -14,6 +14,7 @@ import com.devin.schoolbell95.data.Prefs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -46,52 +47,56 @@ object BellScheduler {
      * Cheap to call from app startup and after schedule edits.
      */
     fun rescheduleAll(context: Context) {
+        val appContext = context.applicationContext
+        CoroutineScope(Dispatchers.IO).launch {
+            rescheduleAllNow(appContext)
+        }
+    }
+
+    suspend fun rescheduleAllNow(context: Context) = withContext(Dispatchers.IO) {
         ensureChannel(context)
-        val scope = CoroutineScope(Dispatchers.IO)
-        scope.launch {
-            val prefs = Prefs(context)
-            val db = AppDatabase.get(context)
-            val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val prefs = Prefs(context)
+        val db = AppDatabase.get(context)
+        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-            cancelAll(context, am)
+        cancelAll(context, am)
 
-            val now = Calendar.getInstance(UFA)
-            var reqId = REQ_BASE
-            for (dayOffset in 0..1) {
-                val day = (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, dayOffset) }
-                val dow = day.get(Calendar.DAY_OF_WEEK)
-                if (dow == Calendar.SUNDAY) continue
-                val kind = DayKind.fromCalendarDow(dow)
-                val bells = db.bellDao().list(prefs.shift, kind)
-                if (bells.isEmpty()) continue
-                bells.forEach { b ->
-                    if (prefs.notify5Min) {
-                        val t = atMinute(day, b.startMin - 5)
-                        if (t > now.timeInMillis) {
-                            schedule(
-                                context, am, reqId++, t,
-                                "Через 5 минут — ${b.lessonNumber}-й урок",
-                                "Звонок в ${fmt(b.startMin)}",
-                            )
-                        }
+        val now = Calendar.getInstance(UFA)
+        var reqId = REQ_BASE
+        for (dayOffset in 0..1) {
+            val day = (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, dayOffset) }
+            val dow = day.get(Calendar.DAY_OF_WEEK)
+            if (dow == Calendar.SUNDAY) continue
+            val kind = DayKind.fromCalendarDow(dow)
+            val bells = db.bellDao().list(prefs.shift, kind)
+            if (bells.isEmpty()) continue
+            bells.forEach { b ->
+                if (prefs.notify5Min) {
+                    val t = atMinute(day, b.startMin - 5)
+                    if (t > now.timeInMillis) {
+                        schedule(
+                            context, am, reqId++, t,
+                            "Через 5 минут — ${b.lessonNumber}-й урок",
+                            "Звонок в ${fmt(b.startMin)}",
+                        )
                     }
-                    if (prefs.notifyOnBell) {
-                        val tStart = atMinute(day, b.startMin)
-                        if (tStart > now.timeInMillis) {
-                            schedule(
-                                context, am, reqId++, tStart,
-                                "Прозвенел звонок",
-                                "Начался ${b.lessonNumber}-й урок · до ${fmt(b.endMin)}",
-                            )
-                        }
-                        val tEnd = atMinute(day, b.endMin)
-                        if (tEnd > now.timeInMillis) {
-                            schedule(
-                                context, am, reqId++, tEnd,
-                                "Прозвенел звонок",
-                                "Перемена после ${b.lessonNumber}-го урока",
-                            )
-                        }
+                }
+                if (prefs.notifyOnBell) {
+                    val tStart = atMinute(day, b.startMin)
+                    if (tStart > now.timeInMillis) {
+                        schedule(
+                            context, am, reqId++, tStart,
+                            "Прозвенел звонок",
+                            "Начался ${b.lessonNumber}-й урок · до ${fmt(b.endMin)}",
+                        )
+                    }
+                    val tEnd = atMinute(day, b.endMin)
+                    if (tEnd > now.timeInMillis) {
+                        schedule(
+                            context, am, reqId++, tEnd,
+                            "Прозвенел звонок",
+                            "Перемена после ${b.lessonNumber}-го урока",
+                        )
                     }
                 }
             }
