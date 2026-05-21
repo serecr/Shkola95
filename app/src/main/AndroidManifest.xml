@@ -27,9 +27,12 @@
 
         <receiver
             android:name=".notif.BellReceiver"
-            android:exported="false">
+            android:exported="false" />
+
+        <receiver
+            android:name=".notif.BootReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.devin.schoolbell95.BELL" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
                 <action android:name="android.intent.action.TIME_SET" />
@@ -39,7 +42,7 @@
 
         <receiver
             android:name=".widget.NextBellWidgetReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -50,7 +53,7 @@
 
         <receiver
             android:name=".widget.TodayScheduleWidgetReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -61,7 +64,7 @@
 
         <receiver
             android:name=".widget.AssistantShortcutWidgetReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
